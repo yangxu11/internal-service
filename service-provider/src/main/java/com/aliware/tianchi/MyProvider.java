@@ -28,22 +28,22 @@ public class MyProvider {
     private static RegistryConfig registry = new RegistryConfig();
     private static ProtocolConfig protocol = new ProtocolConfig();
 
-    public static void main(String[] args) throws IOException {
-        String env;
-        if (args.length != 1) {
-            LOGGER.info("No specific args found, use [DEFAULT] to run demo provider");
-            env = "small";
-        } else {
-            env = args[0];
-        }
-        List<ThrashConfig> configs;
-        switch (env) {
-            case "small":
-                configs = new SmallConfig().allConfig;
-                break;
-            default:
-                configs = new SmallConfig().allConfig;
-        }
+  public static void main(String[] args) throws IOException, InterruptedException {
+    String env;
+    if (args.length != 1) {
+      LOGGER.info("No specific args found, use [DEFAULT] to run demo provider");
+      env = "small";
+    } else {
+      env = args[0];
+    }
+    List<ThrashConfig> configs;
+    switch (env) {
+      case "small":
+        configs = new SmallConfig().allConfig;
+        break;
+      default:
+        configs = new SmallConfig().allConfig;
+    }
 
         // 当前应用配置
         application.setName("service-provider");
