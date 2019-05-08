@@ -324,3 +324,4 @@ tags
 [._]*.un~
 .flattened-pom.xml
 
+/logs.dir_IS_UNDEFINED/

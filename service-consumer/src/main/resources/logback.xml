@@ -3,9 +3,9 @@
     <property name="LOG_HOME" value="${logs.dir}"/>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>service-consumer.log</file>
+        <file>${LOG_HOME}/service-consumer.log</file>
         <encoder>
-            <pattern>%date %level [%thread] %logger{10} [%file : %line] %msg%n</pattern>
+            <pattern>%date %level [%thread] %msg%n</pattern>
         </encoder>
     </appender>
 
