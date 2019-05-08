@@ -1,6 +1,6 @@
 package com.aliware.tianchi;
 
-import com.dubbo.proxy.DubboProxyApplication;
+import com.aliware.tianchi.netty.NettyServer;
 
 /**
  * Gateway 启动入口
@@ -8,7 +8,9 @@ import com.dubbo.proxy.DubboProxyApplication;
  * @author guohaoice@gmail.com
  */
 public class MyConsumer {
-    public static void main(String[] args) {
-        DubboProxyApplication.main(args);
-    }
+  public static void main(String[] args) {
+    NettyServer server = new NettyServer();
+
+    server.start();
+  }
 }
