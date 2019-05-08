@@ -1,5 +1,6 @@
 package com.aliware.tianchi.policy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.aliware.tianchi.ThrashConfig;
@@ -21,5 +22,6 @@ public class SmallConfig {
     private final ThrashConfig config8=new ThrashConfig(onePeriodInMs,baseMaxConcurrency*2,baseRTT/2);
     private final ThrashConfig config9=new ThrashConfig(onePeriodInMs,baseMaxConcurrency,baseRTT);
 
-    public final List<ThrashConfig> allConfig= Arrays.asList(config1,config2,config3,config4,config5,config6,config7,config8,config9);
+//    public final List<ThrashConfig> allConfig= Arrays.asList(config1,config2,config3,config4,config5,config6,config7,config8,config9);
+    public final List<ThrashConfig> allConfig= new ArrayList<>();
 }

@@ -14,9 +14,8 @@ import org.slf4j.LoggerFactory;
 public class MyProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(MyProvider.class);
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, InterruptedException {
     String env;
-    String salt;
     if (args.length != 1) {
       LOGGER.info("No specific args found, use [DEFAULT] to run demo provider");
       env = "small";
@@ -32,33 +31,26 @@ public class MyProvider {
         configs = new SmallConfig().allConfig;
     }
 
-    // 当前应用配置
     ApplicationConfig application = new ApplicationConfig();
     application.setName("service-provider");
 
-    // 连接注册中心配置
     RegistryConfig registry = new RegistryConfig();
     registry.setAddress("N/A");
 
-    // 服务提供者协议配置
     ProtocolConfig protocol = new ProtocolConfig();
     protocol.setName("dubbo");
     protocol.setPort(20880);
     protocol.setThreads(200);
 
-    // 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口
-
-    // 服务提供者暴露服务配置
     ServiceConfig<HashInterface> service =
-        new ServiceConfig<>(); // 此实例很重，封装了与注册中心的连接，请自行缓存，否则可能造成内存和连接泄漏
+        new ServiceConfig<>();
     service.setApplication(application);
-    service.setRegistry(registry); // 多个注册中心可以用setRegistries()
-    service.setProtocol(protocol); // 多个协议可以用setProtocols()
+    service.setRegistry(registry);
+    service.setProtocol(protocol);
     service.setInterface(HashInterface.class);
     service.setRef(new HashServiceImpl(System.getenv("salt"), configs));
-
-    // 暴露及注册服务
     service.export();
-    System.in.read(); // press any key to exit
+
+    Thread.currentThread().join();
   }
 }
