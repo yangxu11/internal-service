@@ -9,7 +9,7 @@ if [[ "$1" == "consumer" ]]; then
         -Xmx4G \
         -Dsalt=$2 \
         -Dlogs.dir=/root/logs \
-        -cp=/root/dists/workspace-gateway.jar \
+        -cp /root/dists/workspace-gateway.jar:/root/dists/workspace-common.jar \
         /root/dists/service-consumer.jar $2 \
         > /dev/null 2>&1 &
 elif [[ "$1" == "provider-small" ]]; then
@@ -20,7 +20,7 @@ elif [[ "$1" == "provider-small" ]]; then
         -Dsalt=$2 \
         -Dquota=small \
         -Dlogs.dir=/root/logs \
-        -cp=/root/dists/workspace-provider.jar \
+        -cp /root/dists/workspace-gateway.jar /root/dists/workspace-common.jar \
         /root/dists/service-provider.jar \
         > /dev/null 2>&1 &
 elif [[ "$1" == "provider-medium" ]]; then
@@ -31,7 +31,7 @@ elif [[ "$1" == "provider-medium" ]]; then
         -Dsalt=$2 \
         -Dquota=medium \
         -Dlogs.dir=/root/logs \
-        -cp=/root/dists/workspace-provider.jar \
+        -cp /root/dists/workspace-gateway.jar:/root/dists/workspace-common.jar \
         /root/dists/service-provider.jar \
         > /dev/null 2>&1 &
 elif [[ "$1" == "provider-large" ]]; then
@@ -42,7 +42,7 @@ elif [[ "$1" == "provider-large" ]]; then
         -Dsalt=$2 \
         -Dquota=large \
         -Dlogs.dir=/root/logs \
-        -cp=/root/dists/workspace-provider.jar \
+        -cp /root/dists/workspace-gateway.jar:/root/dists/workspace-common.jar \
         /root/dists/service-provider.jar \
         > /dev/null 2>&1 &
 else
