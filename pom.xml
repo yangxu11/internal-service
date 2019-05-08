@@ -6,7 +6,6 @@
 
     <properties>
         <dubbo.version>tianchi.1.0.0</dubbo.version>
-        <gateway.version>tianchi.1.0.0</gateway.version>
     </properties>
 
     <artifactId>service</artifactId>
@@ -37,11 +36,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.9</version>
-            </dependency>
-            <dependency>
-                <groupId>com.dubbo.proxy</groupId>
-                <artifactId>dubbo-proxy</artifactId>
-                <version>${gateway.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.aliware.tianchi</groupId>
