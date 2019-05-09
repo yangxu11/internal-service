@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import com.aliware.tianchi.policy.SmallConfig;
 import org.apache.dubbo.common.extension.ExtensionLoader;
+import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ArgumentConfig;
 import org.apache.dubbo.config.MethodConfig;
@@ -25,12 +26,10 @@ public class MyProvider {
   private static ProtocolConfig protocol = new ProtocolConfig();
 
   public static void main(String[] args) throws InterruptedException {
-    String env;
-    if (args.length != 1) {
+    String env=System.getenv("quota");
+    if(StringUtils.isEmpty(env)){
+      env="small";
       LOGGER.info("[PROVIDER-SERVICE]No specific args found, use [DEFAULT] to run demo provider");
-      env = "small";
-    } else {
-      env = args[0];
     }
     List<ThrashConfig> configs;
     switch (env) {
@@ -51,6 +50,7 @@ public class MyProvider {
     protocol.setName("dubbo");
     protocol.setPort(20880);
     protocol.setThreads(500);
+    protocol.setHost("0.0.0.0");
 
     // 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口
     exportHashService(configs);

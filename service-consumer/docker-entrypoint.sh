@@ -10,4 +10,3 @@ java -jar \
      -Dsalt=$2 \
      -Dlogs.dir=/root/runtime/logs \
      /root/dists/service-consumer.jar
-

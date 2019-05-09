@@ -91,6 +91,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
   private List<URL> buildUrls(String interfaceName, Map<String, String> attributes) {
     List<URL> urls = new ArrayList<>();
     urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, interfaceName, attributes));
+//    urls.add(new URL(Constants.DUBBO_PROTOCOL, "39.100.66.90", 20880, interfaceName, attributes));
     return urls;
   }
 
