@@ -108,7 +108,9 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         reference.setRegistry(registry);
         reference.setInterface(HashInterface.class);
         List<URL> urls = reference.toUrls();
-        urls.addAll(buildUrls(HashInterface.class.getName(), new HashMap<>()));
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("loadbalance", "user");
+        urls.addAll(buildUrls(HashInterface.class.getName(), attributes));
         return reference.get();
     }
 

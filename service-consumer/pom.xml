@@ -26,11 +26,11 @@
         </dependency>
 
         <!--for test-->
-        <!--        <dependency>-->
-        <!--            <artifactId>workspace-gateway</artifactId>-->
-        <!--            <groupId>com.aliware.tianchi</groupId>-->
-        <!--            <version>1.0.0</version>-->
-        <!--        </dependency>-->
+        <!--<dependency>-->
+            <!--<artifactId>workspace-gateway</artifactId>-->
+            <!--<groupId>com.aliware.tianchi</groupId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
 
     </dependencies>
 
