@@ -8,7 +8,7 @@ import com.aliware.tianchi.ThrashConfig;
  */
 public abstract class BaseConfig {
     final int maxThreadCount ;
-    final int onePeriodInSec = 20;
+    final int onePeriodInSec = 15;
     final int warmUpInSec = 30;
     final int minRTTInMs = 40;
     final int normalRTTInMs = 50;

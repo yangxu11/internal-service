@@ -6,7 +6,7 @@ import java.util.concurrent.Semaphore;
  * @author guohaoice@gmail.com
  */
 public class ThrashConfig {
-    public static final ThrashConfig INIT_CONFIG = new ThrashConfig(4000, Integer.MAX_VALUE, 10);
+    static final ThrashConfig INIT_CONFIG = new ThrashConfig(0, 1600, 50);
     final long durationInMs;
     final int averageRTTInMs;
     final Semaphore permit;
