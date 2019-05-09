@@ -1,5 +1,7 @@
 package com.aliware.tianchi;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * @author guohaoice@gmail.com
  */
@@ -15,5 +17,5 @@ public interface HashInterface {
      * @param input 要计算的字符串
      * @return 字符串的 hash 值
      */
-    int hash(String input);
+    CompletableFuture<Integer> hash(String input);
 }

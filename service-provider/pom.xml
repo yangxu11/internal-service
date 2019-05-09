@@ -22,49 +22,33 @@
             <artifactId>dubbo</artifactId>
         </dependency>
 
-        <!--for test-->
-        <dependency>
-            <artifactId>workspace-provider</artifactId>
-            <groupId>com.aliware.tianchi</groupId>
-            <version>1.0.0</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <artifactId>workspace-provider</artifactId>-->
+        <!--            <groupId>com.aliware.tianchi</groupId>-->
+        <!--            <version>1.0.0</version>-->
+        <!--        </dependency>-->
 
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <mainClass>com.aliware.tianchi.MyProvider</mainClass>
+                </configuration>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>repackage</goal>
                         </goals>
-                        <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <finalName>service-provider</finalName>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.aliware.tianchi.MyProvider</mainClass>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/spring.handlers</resource>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/spring.schemas</resource>
-                                </transformer>
-                            </transformers>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
+        <finalName>service-provider</finalName>
     </build>
 
 </project>

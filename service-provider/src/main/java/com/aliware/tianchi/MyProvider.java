@@ -2,6 +2,7 @@ package com.aliware.tianchi;
 
 import com.aliware.tianchi.policy.SmallConfig;
 import org.apache.dubbo.common.extension.ExtensionLoader;
+import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ArgumentConfig;
 import org.apache.dubbo.config.MethodConfig;
@@ -12,7 +13,6 @@ import org.apache.dubbo.rpc.service.CallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,13 +28,11 @@ public class MyProvider {
     private static RegistryConfig registry = new RegistryConfig();
     private static ProtocolConfig protocol = new ProtocolConfig();
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        String env;
-        if (args.length != 1) {
-            LOGGER.info("No specific args found, use [DEFAULT] to run demo provider");
+    public static void main(String[] args) throws InterruptedException {
+        String env = System.getenv("quota");
+        if (StringUtils.isEmpty(env)) {
             env = "small";
-        } else {
-            env = args[0];
+            LOGGER.info("[PROVIDER-SERVICE]No specific args found, use [DEFAULT] to run demo provider");
         }
         List<ThrashConfig> configs;
         switch (env) {
@@ -56,7 +54,8 @@ public class MyProvider {
         protocol.setName("dubbo");
 //        protocol.setPort(20881);
         protocol.setPort(20880);
-        protocol.setThreads(200);
+        protocol.setThreads(500);
+        protocol.setHost("0.0.0.0");
 
         // 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口
         exportHashService(configs);
@@ -67,8 +66,7 @@ public class MyProvider {
             LOGGER.error("exportCallbackServiceIfNeed failed", e);
         }
 
-
-        System.in.read(); // press any key to exit
+        Thread.currentThread().join();
     }
 
     private static void exportHashService(List<ThrashConfig> configs) {
@@ -86,13 +84,16 @@ public class MyProvider {
     }
 
     private static void exportCallbackServiceIfNeed() {
-        Set<String> supportedExtensions = ExtensionLoader.getExtensionLoader(CallbackService.class).getSupportedExtensions();
+        Set<String> supportedExtensions =
+                ExtensionLoader.getExtensionLoader(CallbackService.class).getSupportedExtensions();
         if (supportedExtensions != null && supportedExtensions.size() == 1) {
-            CallbackService callbackService = ExtensionLoader.getExtensionLoader(CallbackService.class).getExtension(supportedExtensions.iterator().next());
-            ServiceConfig<CallbackService> callbackServiceServiceConfig = new ServiceConfig<>(); // 此实例很重，封装了与注册中心的连接，请自行缓存，否则可能造成内存和连接泄漏
+            CallbackService callbackService =
+                    ExtensionLoader.getExtensionLoader(CallbackService.class)
+                            .getExtension(supportedExtensions.iterator().next());
+            ServiceConfig<CallbackService> callbackServiceServiceConfig = new ServiceConfig<>();
             callbackServiceServiceConfig.setApplication(application);
-            callbackServiceServiceConfig.setRegistry(registry); // 多个注册中心可以用setRegistries()
-            callbackServiceServiceConfig.setProtocol(protocol); // 多个协议可以用setProtocols()
+            callbackServiceServiceConfig.setRegistry(registry);
+            callbackServiceServiceConfig.setProtocol(protocol);
             callbackServiceServiceConfig.setInterface(CallbackService.class);
             callbackServiceServiceConfig.setRef(callbackService);
             callbackServiceServiceConfig.setCallbacks(1000);
@@ -106,6 +107,5 @@ public class MyProvider {
             callbackServiceServiceConfig.setMethods(Collections.singletonList(methodConfig));
             callbackServiceServiceConfig.export();
         }
-
     }
 }
