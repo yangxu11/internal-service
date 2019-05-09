@@ -29,8 +29,9 @@ public class NettyServer {
                 new NioEventLoopGroup(
                         Runtime.getRuntime().availableProcessors() * 2,
                         new NamedThreadFactory("Dubbo-Proxy-Work"));
-        bootstrap
-                .group(bossGroup, workerGroup)
+        HttpProcessHandler handler = new HttpProcessHandler();
+
+        bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(
                         new ChannelInitializer<Channel>() {
@@ -39,7 +40,7 @@ public class NettyServer {
                                 ChannelPipeline pipeline = ch.pipeline();
                                 pipeline.addLast(new HttpServerCodec());
                                 pipeline.addLast(new HttpObjectAggregator(0));
-                                pipeline.addLast(new HttpProcessHandler());
+                                pipeline.addLast(handler);
                             }
                         })
                 .childOption(ChannelOption.TCP_NODELAY, true)
