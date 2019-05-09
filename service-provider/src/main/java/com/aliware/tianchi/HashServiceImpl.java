@@ -1,16 +1,17 @@
 package com.aliware.tianchi;
 
-import org.apache.dubbo.common.utils.NamedThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.dubbo.common.utils.NamedThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Facade
@@ -23,55 +24,47 @@ public class HashServiceImpl implements HashInterface {
     private final String salt;
     private final AtomicBoolean init = new AtomicBoolean(false);
     private final List<ThrashConfig> configs;
-    private volatile ThrashConfig config;
+    private volatile ThrashConfig currentConfig;
     private Random rng = new Random(2019);
     private ScheduledExecutorService scheduler =
-            new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("HashService-Refresher"));
+            new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("HashService-Config-Refresher"));
 
     public HashServiceImpl(String salt, List<ThrashConfig> configs) {
         this.salt = salt;
-        this.config = ThrashConfig.INIT_CONFIG;
+        this.currentConfig = ThrashConfig.INIT_CONFIG;
         this.configs = Collections.unmodifiableList(configs);
     }
 
     @Override
     public CompletableFuture<Integer> hash(String input) {
         long st = System.currentTimeMillis();
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (!init.get()) {
+            if (init.compareAndSet(false, true)) {
+                int startTime = 0;
+                for (ThrashConfig thrashConfig : configs) {
+                    scheduler.schedule(() -> refresh(thrashConfig), startTime, TimeUnit.SECONDS);
+                    startTime += thrashConfig.durationInMs;
+                }
+            }
         }
-        //    if (!init.get()) {
-        //      if (init.compareAndSet(false, true)) {
-        //        int startTime = 0;
-        //        for (ThrashConfig thrashConfig : configs) {
-        //          scheduler.schedule(
-        //              () -> refresh(thrashConfig), startTime + config.durationInMs,
-        // TimeUnit.MILLISECONDS);
-        //          startTime += config.durationInMs;
-        //        }
-        //      }
-        //    }
-        //    Semaphore permit = config.permit;
-        //    try {
-        //      permit.acquire();
-        //      long baseRtt = nextRTT();
-        //      Thread.sleep(baseRtt);
-        //      return (input + salt).hashCode();
-        //    } catch (InterruptedException e) {
-        //      Thread.currentThread().interrupt();
-        //    } finally {
-              long cost = System.currentTimeMillis() - st;
-              LOGGER.info("HashService cost:{} ms to handle request", cost);
-        return CompletableFuture.completedFuture((input + salt).hashCode());
-        //      permit.release();
-        //    }
-        //    throw new IllegalStateException("Unexpected exception");
+        Semaphore permit = currentConfig.permit;
+        try {
+            permit.acquire();
+            long rtt = nextRTT();
+            Thread.sleep(rtt);
+            return CompletableFuture.completedFuture((input + salt).hashCode());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            long cost = System.currentTimeMillis() - st;
+            LOGGER.info("HashService cost:{} ms to handle request", cost);
+            permit.release();
+        }
+        throw new IllegalStateException("Unexpected exception");
     }
 
     private void refresh(ThrashConfig thrashConfig) {
-        this.config = thrashConfig;
+        this.currentConfig = thrashConfig;
     }
 
     private long nextRTT() {
@@ -80,7 +73,7 @@ public class HashServiceImpl implements HashInterface {
         double cdf = 0;
         while (u >= cdf) {
             x++;
-            cdf = 1 - Math.exp(-1.0D * 1 / config.averageRTTInMs * x);
+            cdf = 1 - Math.exp(-1.0D * 1 / currentConfig.averageRTTInMs * x);
         }
         return x;
     }

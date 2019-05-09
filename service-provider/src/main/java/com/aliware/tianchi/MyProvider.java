@@ -1,5 +1,11 @@
 package com.aliware.tianchi;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import com.aliware.tianchi.policy.BaseConfig;
+import com.aliware.tianchi.policy.LargeConfig;
+import com.aliware.tianchi.policy.MediumConfig;
 import com.aliware.tianchi.policy.SmallConfig;
 import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.common.utils.StringUtils;
@@ -12,10 +18,6 @@ import org.apache.dubbo.config.ServiceConfig;
 import org.apache.dubbo.rpc.service.CallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author guohaoice@gmail.com
@@ -32,15 +34,21 @@ public class MyProvider {
         String env = System.getenv("quota");
         if (StringUtils.isEmpty(env)) {
             env = "small";
-            LOGGER.info("[PROVIDER-SERVICE]No specific args found, use [DEFAULT] to run demo provider");
+            LOGGER.info("[PROVIDER-SERVICE] No specific args found, use [DEFAULT] to run demo provider");
         }
-        List<ThrashConfig> configs;
+        BaseConfig config;
         switch (env) {
             case "small":
-                configs = new SmallConfig().allConfig;
+                config= new SmallConfig();
+                break;
+            case "medium":
+                config = new MediumConfig();
+                break;
+            case "large":
+                config = new LargeConfig();
                 break;
             default:
-                configs = new SmallConfig().allConfig;
+                throw new IllegalStateException();
         }
 
         // 当前应用配置
@@ -52,13 +60,12 @@ public class MyProvider {
 
         // 服务提供者协议配置
         protocol.setName("dubbo");
-//        protocol.setPort(20881);
         protocol.setPort(20880);
-        protocol.setThreads(500);
+        protocol.setThreads(config.getMaxThreadCount());
         protocol.setHost("0.0.0.0");
 
         // 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口
-        exportHashService(configs);
+        exportHashService(config.getConfigs());
 
         try {
             exportCallbackServiceIfNeed();
@@ -72,10 +79,10 @@ public class MyProvider {
     private static void exportHashService(List<ThrashConfig> configs) {
         // 服务提供者暴露服务配置
         ServiceConfig<HashInterface> service =
-                new ServiceConfig<>(); // 此实例很重，封装了与注册中心的连接，请自行缓存，否则可能造成内存和连接泄漏
+                new ServiceConfig<>();
         service.setApplication(application);
-        service.setRegistry(registry); // 多个注册中心可以用setRegistries()
-        service.setProtocol(protocol); // 多个协议可以用setProtocols()
+        service.setRegistry(registry);
+        service.setProtocol(protocol);
         service.setInterface(HashInterface.class);
         service.setRef(new HashServiceImpl(System.getenv("salt"), configs));
 
