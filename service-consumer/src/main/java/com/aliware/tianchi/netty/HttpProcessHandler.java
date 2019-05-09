@@ -62,28 +62,28 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         hashInterface.hash(content)
                 .whenComplete((actual, t) -> {
-                    if (actual.equals(expected)) {
+                    if (t == null && actual.equals(expected)) {
                         FullHttpResponse ok =
                                 new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer("OK\n", CharsetUtil.UTF_8));
                         ok.headers().add(HttpHeaderNames.CONTENT_LENGTH, 3);
                         ctx.writeAndFlush(ok);
                         if (LOGGER.isInfoEnabled()) {
-                            LOGGER.info(
-                                    "Request result:success cost:{} ms", System.currentTimeMillis() - start);
+                            LOGGER.info("Request result:success cost:{} ms", System.currentTimeMillis() - start);
                         }
                     } else {
                         FullHttpResponse error =
                                 new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
                         ctx.writeAndFlush(error);
-                        LOGGER.info(
-                                "Request result:failure cost:{} ms", System.currentTimeMillis() - start);
+                        LOGGER.info("Request result:failure cost:{} ms", System.currentTimeMillis() - start, t);
                     }
                 });
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ctx.close();
+        LOGGER.error("Channel error", cause);
+        cause.printStackTrace();
+//        ctx.close();
     }
 
     private List<URL> buildUrls(String interfaceName, Map<String, String> attributes) {
