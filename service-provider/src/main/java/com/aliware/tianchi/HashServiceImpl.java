@@ -36,13 +36,12 @@ public class HashServiceImpl implements HashInterface {
 
     @Override
     public CompletableFuture<Integer> hash(String input) {
+        long st = System.currentTimeMillis();
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return CompletableFuture.completedFuture((input + salt).hashCode());
-        //    long st = System.currentTimeMillis();
         //    if (!init.get()) {
         //      if (init.compareAndSet(false, true)) {
         //        int startTime = 0;
@@ -63,8 +62,9 @@ public class HashServiceImpl implements HashInterface {
         //    } catch (InterruptedException e) {
         //      Thread.currentThread().interrupt();
         //    } finally {
-        //      long cost = System.currentTimeMillis() - st;
-        //      LOGGER.info("HashService cost:{} ms to handle request", cost);
+              long cost = System.currentTimeMillis() - st;
+              LOGGER.info("HashService cost:{} ms to handle request", cost);
+        return CompletableFuture.completedFuture((input + salt).hashCode());
         //      permit.release();
         //    }
         //    throw new IllegalStateException("Unexpected exception");

@@ -1,5 +1,11 @@
 package com.aliware.tianchi.netty;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import com.aliware.tianchi.HashInterface;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -22,13 +28,6 @@ import org.apache.dubbo.rpc.service.CallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static io.netty.handler.codec.rtsp.RtspResponseStatuses.INTERNAL_SERVER_ERROR;
@@ -38,17 +37,13 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpProcessHandler.class);
     public final ApplicationConfig application = new ApplicationConfig();
 
-    private final FullHttpResponse ok =
-            new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer("OK", CharsetUtil.UTF_8));
-    private final FullHttpResponse error =
-            new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
+
     private final AtomicBoolean init = new AtomicBoolean(false);
     private HashInterface hashInterface;
     private String salt = System.getenv("salt");
 
     public HttpProcessHandler() {
         this.hashInterface = getServiceStub();
-        ok.headers().add(HttpHeaderNames.CONTENT_LENGTH, 2);
     }
 
     @Override
@@ -65,34 +60,36 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
             initCallbackListener();
         }
 
-        hashInterface
-                .hash(content)
-                .whenComplete(
-                        (h, t) -> {
-                            if (h.equals(expected)) {
-                                ctx.writeAndFlush(ok.retain());
-                                if (LOGGER.isInfoEnabled()) {
-                                    LOGGER.info(
-                                            "Request result:success cost:{} ms", System.currentTimeMillis() - start);
-                                }
-                            } else {
-                                ctx.writeAndFlush(error.retain());
-                                LOGGER.info(
-                                        "Request result:failure cost:{} ms", System.currentTimeMillis() - start);
-                            }
-                        });
+        hashInterface.hash(content)
+                .whenComplete((actual, t) -> {
+                    if (actual.equals(expected)) {
+                        FullHttpResponse ok =
+                                new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer("OK\n", CharsetUtil.UTF_8));
+                        ok.headers().add(HttpHeaderNames.CONTENT_LENGTH, 3);
+                        ctx.writeAndFlush(ok);
+                        if (LOGGER.isInfoEnabled()) {
+                            LOGGER.info(
+                                    "Request result:success cost:{} ms", System.currentTimeMillis() - start);
+                        }
+                    } else {
+                        FullHttpResponse error =
+                                new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
+                        ctx.writeAndFlush(error);
+                        LOGGER.info(
+                                "Request result:failure cost:{} ms", System.currentTimeMillis() - start);
+                    }
+                });
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
         ctx.close();
     }
 
     private List<URL> buildUrls(String interfaceName, Map<String, String> attributes) {
         List<URL> urls = new ArrayList<>();
         urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, interfaceName, attributes));
-//    urls.add(new URL(Constants.DUBBO_PROTOCOL, "39.100.66.90", 20880, interfaceName, attributes));
+//    urls.add(new URL(Constants.DUBBO_PROTOCOL, "localhost", 20880, interfaceName, attributes));
         return urls;
     }
 
