@@ -26,11 +26,11 @@
         </dependency>
 
         <!--for test-->
-        <!--<dependency>-->
-            <!--<artifactId>workspace-gateway</artifactId>-->
-            <!--<groupId>com.aliware.tianchi</groupId>-->
-            <!--<version>1.0.0</version>-->
-        <!--</dependency>-->
+<!--        <dependency>-->
+<!--            <artifactId>workspace-gateway</artifactId>-->
+<!--            <groupId>com.aliware.tianchi</groupId>-->
+<!--            <version>1.0.0</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 
@@ -41,6 +41,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.1.4.RELEASE</version>
                 <configuration>
+                    <layout>ZIP</layout>
                     <fork>true</fork>
                     <mainClass>com.aliware.tianchi.MyConsumer</mainClass>
                 </configuration>

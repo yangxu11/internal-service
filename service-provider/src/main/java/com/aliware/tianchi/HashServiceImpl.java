@@ -43,7 +43,7 @@ public class HashServiceImpl implements HashInterface {
                 int startTime = 0;
                 for (ThrashConfig thrashConfig : configs) {
                     scheduler.schedule(() -> refresh(thrashConfig), startTime, TimeUnit.SECONDS);
-                    startTime += thrashConfig.durationInMs;
+                    startTime += thrashConfig.durationInSec;
                 }
             }
         }

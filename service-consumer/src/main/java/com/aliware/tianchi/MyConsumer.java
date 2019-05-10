@@ -8,6 +8,7 @@ import com.aliware.tianchi.netty.NettyServer;
  * @author guohaoice@gmail.com
  */
 public class MyConsumer {
+
     public static void main(String[] args) {
         NettyServer server = new NettyServer();
 

@@ -31,6 +31,7 @@ public class MyProvider {
     private static ProtocolConfig protocol = new ProtocolConfig();
 
     public static void main(String[] args) throws InterruptedException {
+
         String env = System.getenv("quota");
         if (StringUtils.isEmpty(env)) {
             env = "small";
@@ -39,7 +40,7 @@ public class MyProvider {
         BaseConfig config;
         switch (env) {
             case "small":
-                config= new SmallConfig();
+                config = new SmallConfig();
                 break;
             case "medium":
                 config = new MediumConfig();
