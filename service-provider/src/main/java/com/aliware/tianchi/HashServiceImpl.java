@@ -65,6 +65,7 @@ public class HashServiceImpl implements HashInterface {
 
     private void refresh(ThrashConfig thrashConfig) {
         this.currentConfig = thrashConfig;
+        LOGGER.info("Refresh config to {}",thrashConfig);
     }
 
     private long nextRTT() {

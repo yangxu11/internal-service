@@ -31,8 +31,7 @@ public class MyProvider {
     private static ProtocolConfig protocol = new ProtocolConfig();
 
     public static void main(String[] args) throws InterruptedException {
-
-        String env = System.getenv("quota");
+        String env = System.getProperty("quota");
         if (StringUtils.isEmpty(env)) {
             env = "small";
             LOGGER.info("[PROVIDER-SERVICE] No specific args found, use [DEFAULT] to run demo provider");
@@ -63,6 +62,7 @@ public class MyProvider {
         protocol.setName("dubbo");
         protocol.setPort(20880);
         protocol.setThreads(config.getMaxThreadCount());
+        LOGGER.info("[PROVIDER-SERVICE] Max threadPool size:{}",config.getMaxThreadCount());
         protocol.setHost("0.0.0.0");
 
         // 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口
@@ -85,7 +85,7 @@ public class MyProvider {
         service.setRegistry(registry);
         service.setProtocol(protocol);
         service.setInterface(HashInterface.class);
-        service.setRef(new HashServiceImpl(System.getenv("salt"), configs));
+        service.setRef(new HashServiceImpl(System.getProperty("salt"), configs));
 
         // 暴露及注册服务
         service.export();

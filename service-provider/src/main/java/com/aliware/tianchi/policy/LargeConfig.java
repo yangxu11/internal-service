@@ -10,11 +10,11 @@ import com.aliware.tianchi.ThrashConfig;
  */
 public class LargeConfig extends BaseConfig {
     private final int maxConcurrency = 580;
-    private final int normalCurrency = 500;
+    private final int normalConcurrency = 500;
     private final int minConcurrency = 420;
     private final ThrashConfig warmUp = new ThrashConfig(warmUpInSec + onePeriodInSec, maxConcurrency, normalRTTInMs);
     private final ThrashConfig config0 = new ThrashConfig(onePeriodInSec,minConcurrency,normalRTTInMs);
-    private final ThrashConfig config1 = new ThrashConfig(onePeriodInSec,normalCurrency,maxRTTInMs);
+    private final ThrashConfig config1 = new ThrashConfig(onePeriodInSec, normalConcurrency,maxRTTInMs);
     private final ThrashConfig config2 = new ThrashConfig(onePeriodInSec,maxConcurrency,minRTTInMs);
     public final List<ThrashConfig> allConfig = Collections.unmodifiableList(Arrays.asList(warmUp, config0, config1, config2));
 

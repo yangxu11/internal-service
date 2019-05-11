@@ -16,4 +16,8 @@ public class ThrashConfig {
         this.averageRTTInMs = averageRTTInMs;
         this.permit = new Semaphore(maxConcurrency);
     }
+    @Override
+    public String toString(){
+        return "Duration :"+  durationInSec+" averageRTT:"+averageRTTInMs+" maxConcurrency:"+permit.availablePermits();
+    }
 }

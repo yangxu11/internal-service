@@ -17,7 +17,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.util.CharsetUtil;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.ExtensionLoader;
@@ -41,7 +40,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     private final AtomicBoolean init = new AtomicBoolean(false);
     private HashInterface hashInterface;
-    private String salt = System.getenv("salt");
+    private String salt = System.getProperty("salt");
 
     public HttpProcessHandler() {
         this.hashInterface = getServiceStub();
@@ -89,6 +88,8 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private List<URL> buildUrls(String interfaceName, Map<String, String> attributes) {
         List<URL> urls = new ArrayList<>();
         urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, interfaceName, attributes));
+//        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-medium", 20880, interfaceName, attributes));
+//        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-large", 20880, interfaceName, attributes));
 //    urls.add(new URL(Constants.DUBBO_PROTOCOL, "localhost", 20880, interfaceName, attributes));
         return urls;
     }
