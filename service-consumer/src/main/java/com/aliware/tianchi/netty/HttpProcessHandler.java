@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import com.aliware.tianchi.HashInterface;
 import io.netty.buffer.Unpooled;
@@ -23,6 +24,7 @@ import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
+import org.apache.dubbo.rpc.RpcContext;
 import org.apache.dubbo.rpc.listener.CallbackListener;
 import org.apache.dubbo.rpc.service.CallbackService;
 import org.slf4j.Logger;
@@ -60,8 +62,9 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
             initCallbackListener();
         }
 
-        hashInterface.hash(content)
-                .whenComplete((actual, t) -> {
+        hashInterface.hash(content);
+        CompletableFuture<Integer> result = RpcContext.getContext().getCompletableFuture();
+                result.whenComplete((actual, t) -> {
                     if (t == null && actual.equals(expected)) {
                         FullHttpResponse ok =
                                 new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer("OK\n", CharsetUtil.UTF_8));
@@ -108,6 +111,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         List<URL> urls = reference.toUrls();
         Map<String, String> attributes = new HashMap<>();
         attributes.put("loadbalance", "user");
+        attributes.put("async", "true");
         urls.addAll(buildUrls(HashInterface.class.getName(), attributes));
         return reference.get();
     }

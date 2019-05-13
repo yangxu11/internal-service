@@ -3,7 +3,6 @@ package com.aliware.tianchi;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
@@ -36,7 +35,7 @@ public class HashServiceImpl implements HashInterface {
     }
 
     @Override
-    public CompletableFuture<Integer> hash(String input) {
+    public Integer hash(String input) {
         long st = System.currentTimeMillis();
         if (!init.get()) {
             if (init.compareAndSet(false, true)) {
@@ -52,7 +51,7 @@ public class HashServiceImpl implements HashInterface {
             permit.acquire();
             long rtt = nextRTT();
             Thread.sleep(rtt);
-            return CompletableFuture.completedFuture((input + salt).hashCode());
+            return (input + salt).hashCode();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
