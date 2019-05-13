@@ -60,9 +60,8 @@ public class MyProvider {
 
         // 服务提供者协议配置
         protocol.setName("dubbo");
-        protocol.setPort(20880);
+        protocol.setPort(config.getPort());
         protocol.setThreads(config.getMaxThreadCount());
-        LOGGER.info("[PROVIDER-SERVICE] Max threadPool size:{}",config.getMaxThreadCount());
         protocol.setHost("0.0.0.0");
 
         // 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口

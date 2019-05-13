@@ -64,22 +64,22 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         hashInterface.hash(content);
         CompletableFuture<Integer> result = RpcContext.getContext().getCompletableFuture();
-                result.whenComplete((actual, t) -> {
-                    if (t == null && actual.equals(expected)) {
-                        FullHttpResponse ok =
-                                new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer("OK\n", CharsetUtil.UTF_8));
-                        ok.headers().add(HttpHeaderNames.CONTENT_LENGTH, 3);
-                        ctx.writeAndFlush(ok);
-                        if (LOGGER.isInfoEnabled()) {
-                            LOGGER.info("Request result:success cost:{} ms", System.currentTimeMillis() - start);
-                        }
-                    } else {
-                        FullHttpResponse error =
-                                new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
-                        ctx.writeAndFlush(error);
-                        LOGGER.info("Request result:failure cost:{} ms", System.currentTimeMillis() - start, t);
-                    }
-                });
+        result.whenComplete((actual, t) -> {
+            if (t == null && actual.equals(expected)) {
+                FullHttpResponse ok =
+                        new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer("OK\n", CharsetUtil.UTF_8));
+                ok.headers().add(HttpHeaderNames.CONTENT_LENGTH, 3);
+                ctx.writeAndFlush(ok);
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info("Request result:success cost:{} ms", System.currentTimeMillis() - start);
+                }
+            } else {
+                FullHttpResponse error =
+                        new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
+                ctx.writeAndFlush(error);
+                LOGGER.info("Request result:failure cost:{} ms", System.currentTimeMillis() - start, t);
+            }
+        });
     }
 
     @Override
@@ -91,8 +91,8 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private List<URL> buildUrls(String interfaceName, Map<String, String> attributes) {
         List<URL> urls = new ArrayList<>();
         urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, interfaceName, attributes));
-//        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-medium", 20880, interfaceName, attributes));
-//        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-large", 20880, interfaceName, attributes));
+//        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-medium", 20870, interfaceName, attributes));
+//        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-large", 20890, interfaceName, attributes));
 //    urls.add(new URL(Constants.DUBBO_PROTOCOL, "localhost", 20880, interfaceName, attributes));
         return urls;
     }

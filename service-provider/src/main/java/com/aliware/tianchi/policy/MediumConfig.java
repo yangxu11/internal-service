@@ -9,17 +9,18 @@ import com.aliware.tianchi.ThrashConfig;
  * @author guohaoice@gmail.com
  */
 public class MediumConfig extends BaseConfig {
-    private final int maxConcurrency = 380;
-    private final int normalCurrency = 360;
-    private final int minConcurrency = 320;
+    private final int maxConcurrency = 450;
+    private final int normalCurrency = 350;
+    private final int minConcurrency = 300;
     private final ThrashConfig warmUp = new ThrashConfig(warmUpInSec + onePeriodInSec, maxConcurrency, normalRTTInMs);
-    private final ThrashConfig config0 = new ThrashConfig(onePeriodInSec,minConcurrency,maxRTTInMs);
-    private final ThrashConfig config1 = new ThrashConfig(onePeriodInSec,maxConcurrency, normalRTTInMs);
-    private final ThrashConfig config2 = new ThrashConfig(onePeriodInSec,normalCurrency,minRTTInMs);
-    private final List<ThrashConfig> allConfig = Collections.unmodifiableList(Arrays.asList(warmUp, config0, config1, config2));
+    private final ThrashConfig min = new ThrashConfig(onePeriodInSec, minConcurrency, maxRTTInMs);
+    private final ThrashConfig normal = new ThrashConfig(onePeriodInSec, normalCurrency, normalRTTInMs);
+    private final ThrashConfig max = new ThrashConfig(onePeriodInSec, maxConcurrency, minRTTInMs);
+
+    private final List<ThrashConfig> allConfig = Collections.unmodifiableList(Arrays.asList(warmUp, normal, max, min));
 
     public MediumConfig() {
-        super(400);
+        super(500, 20870);
     }
 
     @Override

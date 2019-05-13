@@ -10,16 +10,17 @@ import com.aliware.tianchi.ThrashConfig;
  */
 public class SmallConfig extends BaseConfig {
     private final int maxConcurrency = 180;
-    private final int normalCurrency = 160;
-    private final int minConcurrency = 120;
+    private final int normalCurrency = 150;
+    private final int minConcurrency = 100;
     private final ThrashConfig warmUp = new ThrashConfig(warmUpInSec + onePeriodInSec, maxConcurrency, normalRTTInMs);
-    private final ThrashConfig config0 = new ThrashConfig(onePeriodInSec, maxConcurrency, minRTTInMs);
-    private final ThrashConfig config1 = new ThrashConfig(onePeriodInSec, normalCurrency, normalRTTInMs);
-    private final ThrashConfig config2 = new ThrashConfig(onePeriodInSec, minConcurrency, maxRTTInMs);
-    private final List<ThrashConfig> allConfig = Collections.unmodifiableList(Arrays.asList(warmUp, config0, config1, config2));
+    private final ThrashConfig max = new ThrashConfig(onePeriodInSec, maxConcurrency, minRTTInMs);
+    private final ThrashConfig normal = new ThrashConfig(onePeriodInSec, normalCurrency, normalRTTInMs);
+    private final ThrashConfig min = new ThrashConfig(onePeriodInSec, minConcurrency, maxRTTInMs);
+
+    private final List<ThrashConfig> allConfig = Collections.unmodifiableList(Arrays.asList(warmUp, min, normal, max));
 
     public SmallConfig() {
-        super(200);
+        super(200, 20880);
     }
 
     @Override

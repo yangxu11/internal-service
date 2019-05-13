@@ -7,19 +7,25 @@ import com.aliware.tianchi.ThrashConfig;
  * @author guohaoice@gmail.com
  */
 public abstract class BaseConfig {
-    private final int maxThreadCount ;
     final int onePeriodInSec = 15;
     final int warmUpInSec = 30;
     final int minRTTInMs = 40;
     final int normalRTTInMs = 50;
     final int maxRTTInMs = 60;
+    private final int maxThreadCount;
+    private final int port;
 
-    protected BaseConfig(int maxThreadCount) {
+    protected BaseConfig(int maxThreadCount, int port) {
         this.maxThreadCount = maxThreadCount;
+        this.port = port;
     }
 
-    public int getMaxThreadCount(){
+    public int getMaxThreadCount() {
         return maxThreadCount;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public abstract List<ThrashConfig> getConfigs();
