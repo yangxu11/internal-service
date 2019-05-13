@@ -76,6 +76,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
             } else {
                 FullHttpResponse error =
                         new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR);
+                error.headers().add(HttpHeaderNames.CONTENT_LENGTH, 0);
                 ctx.writeAndFlush(error);
                 LOGGER.info("Request result:failure cost:{} ms", System.currentTimeMillis() - start, t);
             }
