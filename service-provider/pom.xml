@@ -22,13 +22,6 @@
             <artifactId>dubbo</artifactId>
         </dependency>
 
-        <!-- for test -->
-        <dependency>
-            <artifactId>workspace-provider</artifactId>
-            <groupId>com.aliware.tianchi</groupId>
-            <version>1.0.0</version>
-        </dependency>
-
     </dependencies>
 
     <build>
