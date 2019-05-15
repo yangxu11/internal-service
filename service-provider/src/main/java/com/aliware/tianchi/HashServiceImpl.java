@@ -28,7 +28,7 @@ public class HashServiceImpl implements HashInterface {
     private ScheduledExecutorService scheduler =
             new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("HashService-Config-Refresher"));
 
-    public HashServiceImpl(String salt, List<ThrashConfig> configs) {
+    HashServiceImpl(String salt, List<ThrashConfig> configs) {
         this.salt = salt;
         this.currentConfig = ThrashConfig.INIT_CONFIG;
         this.configs = Collections.unmodifiableList(configs);

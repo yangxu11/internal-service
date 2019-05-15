@@ -59,7 +59,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         String content = RandomStringUtils.randomAlphanumeric(16);
         int expected = (content + salt).hashCode();
         if (init.compareAndSet(false, true)) {
-            initCallbackListener();
+            init();
         }
 
         hashInterface.hash(content);
@@ -94,7 +94,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, interfaceName, attributes));
 //        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-medium", 20870, interfaceName, attributes));
 //        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-large", 20890, interfaceName, attributes));
-//    urls.add(new URL(Constants.DUBBO_PROTOCOL, "localhost", 20880, interfaceName, attributes));
+    urls.add(new URL(Constants.DUBBO_PROTOCOL, "localhost", 20880, interfaceName, attributes));
         return urls;
     }
 
@@ -117,6 +117,22 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         return reference.get();
     }
 
+    private void init(){
+        initThrash();
+
+        initCallbackListener();
+    }
+    private void initThrash(){
+        List<URL> urls = buildUrls(HashInterface.class.getName(), new HashMap<>());
+        for (URL url : urls) {
+            RpcContext.getContext().setUrl(url);
+            hashInterface.hash("hey");
+            CompletableFuture<Integer> result = RpcContext.getContext().getCompletableFuture();
+            result.whenComplete((a,t)->{
+                LOGGER.info("Init hash service : url {} result:{}",url,a,t);
+            });
+        }
+    }
     private void initCallbackListener() {
         Set<String> supportedExtensions =
                 ExtensionLoader.getExtensionLoader(CallbackListener.class).getSupportedExtensions();
