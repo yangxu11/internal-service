@@ -1,12 +1,5 @@
 package com.aliware.tianchi.netty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 import com.aliware.tianchi.HashInterface;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -29,6 +22,14 @@ import org.apache.dubbo.rpc.listener.CallbackListener;
 import org.apache.dubbo.rpc.service.CallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -117,48 +118,48 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         return reference.get();
     }
 
-    private void init(){
+    private void init() {
         initThrash();
 
         initCallbackListener();
     }
-    private void initThrash(){
+
+    private void initThrash() {
         List<URL> urls = buildUrls(HashInterface.class.getName(), new HashMap<>());
         for (URL url : urls) {
             RpcContext.getContext().setUrl(url);
             hashInterface.hash("hey");
             CompletableFuture<Integer> result = RpcContext.getContext().getCompletableFuture();
-            result.whenComplete((a,t)->{
-                LOGGER.info("Init hash service : url {} result:{}",url,a,t);
+            result.whenComplete((a, t) -> {
+                LOGGER.info("Init hash service : url {} result:{}", url, a, t);
             });
         }
     }
+
     private void initCallbackListener() {
         Set<String> supportedExtensions =
                 ExtensionLoader.getExtensionLoader(CallbackListener.class).getSupportedExtensions();
         if (!supportedExtensions.isEmpty()) {
+            Map<String, String> attributes = new HashMap<>();
+            attributes.put("addListener.1.callback", "true");
+            attributes.put("callbacks", "1000");
+            attributes.put("connections", "1");
+            attributes.put("dubbo", "2.0.2");
+            attributes.put("dynamic", "true");
+            attributes.put("generic", "false");
+            attributes.put("interface", "org.apache.dubbo.rpc.service.CallbackService");
+            attributes.put("methods", "addListener");
             for (String supportedExtension : supportedExtensions) {
-                CallbackListener extension =
-                        ExtensionLoader.getExtensionLoader(CallbackListener.class)
-                                .getExtension(supportedExtension);
-
-                ReferenceConfig<CallbackService> reference = new ReferenceConfig<>();
-                reference.setApplication(application);
-                reference.setInterface(CallbackService.class);
-
-                Map<String, String> attributes = new HashMap<>();
-                attributes.put("addListener.1.callback", "true");
-                attributes.put("callbacks", "1000");
-                attributes.put("connections", "1");
-                attributes.put("dubbo", "2.0.2");
-                attributes.put("dynamic", "true");
-                attributes.put("generic", "false");
-                attributes.put("interface", "org.apache.dubbo.rpc.service.CallbackService");
-                attributes.put("methods", "addListener");
-
                 List<URL> urls = buildUrls(CallbackService.class.getName(), attributes);
                 for (URL url : urls) {
-                    reference.toUrls().clear();
+                    CallbackListener extension =
+                            ExtensionLoader.getExtensionLoader(CallbackListener.class)
+                                    .getExtension(supportedExtension);
+
+                    ReferenceConfig<CallbackService> reference = new ReferenceConfig<>();
+                    reference.setApplication(application);
+                    reference.setInterface(CallbackService.class);
+
                     reference.toUrls().add(url);
                     // TODO: remote call may fail
                     reference.get().addListener("env.listener", extension);
