@@ -1,7 +1,9 @@
 package com.aliware.tianchi;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import com.aliware.tianchi.policy.BaseConfig;
 import com.aliware.tianchi.policy.LargeConfig;
@@ -80,6 +82,9 @@ public class MyProvider {
         // 服务提供者暴露服务配置
         ServiceConfig<HashInterface> service =
                 new ServiceConfig<>();
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("heartbeat","0" );
+        service.setParameters(attributes);
         service.setApplication(application);
         service.setRegistry(registry);
         service.setProtocol(protocol);
@@ -98,6 +103,9 @@ public class MyProvider {
                     ExtensionLoader.getExtensionLoader(CallbackService.class)
                             .getExtension(supportedExtensions.iterator().next());
             ServiceConfig<CallbackService> callbackServiceServiceConfig = new ServiceConfig<>();
+            Map<String, String> attributes = new HashMap<>();
+            attributes.put("heartbeat","0" );
+            callbackServiceServiceConfig.setParameters(attributes);
             callbackServiceServiceConfig.setApplication(application);
             callbackServiceServiceConfig.setRegistry(registry);
             callbackServiceServiceConfig.setProtocol(protocol);

@@ -114,6 +114,8 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         Map<String, String> attributes = new HashMap<>();
         attributes.put("loadbalance", "user");
         attributes.put("async", "true");
+        attributes.put(Constants.HEARTBEAT_KEY, "0");
+        attributes.put(Constants.RECONNECT_KEY, "false");
         urls.addAll(buildUrls(HashInterface.class.getName(), attributes));
         return reference.get();
     }
@@ -149,6 +151,9 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
             attributes.put("generic", "false");
             attributes.put("interface", "org.apache.dubbo.rpc.service.CallbackService");
             attributes.put("methods", "addListener");
+            attributes.put(Constants.HEARTBEAT_KEY, "0");
+            attributes.put(Constants.RECONNECT_KEY, "false");
+
             for (String supportedExtension : supportedExtensions) {
                 List<URL> urls = buildUrls(CallbackService.class.getName(), attributes);
                 for (URL url : urls) {
