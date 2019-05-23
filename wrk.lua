@@ -14,8 +14,8 @@ done = function(summary, latency, requests)
     io.write("Min RT:          "..(latency.min / 1000).."ms".."\n")
     io.write("Error requests:  "..errors.."\n")
     io.write("Valid requests:  "..valid.."\n")
-    io.write("MAX-QPS:             "..string.format("%.2f",requests.max).."\n")
-    io.write("AVG-QPS:             "..string.format("%.2f",valid / durations).."\n")
+    io.write("MAX-QPS/THREAD:  "..string.format("%.2f",requests.max).."\n")
+    io.write("AVG-QPS:         "..string.format("%.2f",valid / durations).."\n")
     io.write("--------------------------\n")
 
 end
