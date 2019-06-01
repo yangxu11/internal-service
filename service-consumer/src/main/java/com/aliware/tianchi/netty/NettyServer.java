@@ -18,17 +18,16 @@ import org.slf4j.LoggerFactory;
 public class NettyServer {
 
     private Logger logger = LoggerFactory.getLogger(NettyServer.class);
-    private ServerBootstrap bootstrap;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
     public void start() {
-        bootstrap = new ServerBootstrap();
+        ServerBootstrap bootstrap = new ServerBootstrap();
         bossGroup = new NioEventLoopGroup(1, new NamedThreadFactory("Dubbo-Proxy-Boss"));
         workerGroup =
                 new NioEventLoopGroup(
                         Runtime.getRuntime().availableProcessors() * 2,
-                        new NamedThreadFactory("Dubbo-Proxy-Work"));
+                        new NamedThreadFactory("Dubbo-Proxy-Worker"));
         HttpProcessHandler handler = new HttpProcessHandler();
 
         bootstrap.group(bossGroup, workerGroup)

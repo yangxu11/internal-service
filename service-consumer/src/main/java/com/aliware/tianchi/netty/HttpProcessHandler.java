@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -38,14 +37,12 @@ import static io.netty.handler.codec.rtsp.RtspResponseStatuses.INTERNAL_SERVER_E
 @ChannelHandler.Sharable
 public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpProcessHandler.class);
-    public final ApplicationConfig application = new ApplicationConfig();
-
-
-    private final AtomicBoolean init = new AtomicBoolean(false);
+    private final ApplicationConfig application = new ApplicationConfig();
+    private volatile boolean init = false;
     private HashInterface hashInterface;
     private String salt = System.getProperty("salt");
 
-    public HttpProcessHandler() {
+    HttpProcessHandler() {
         this.hashInterface = getServiceStub();
     }
 
@@ -59,7 +56,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         long start = System.currentTimeMillis();
         String content = RandomStringUtils.randomAlphanumeric(16);
         int expected = (content + salt).hashCode();
-        if (init.compareAndSet(false, true)) {
+        if (!init) {
             init();
         }
 
@@ -120,7 +117,13 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         return reference.get();
     }
 
-    private void init() {
+    private synchronized void init() {
+        if (init) {
+            return;
+        }
+
+        init = true;
+
         initThrash();
 
         initCallbackListener();
@@ -133,7 +136,11 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
             hashInterface.hash("hey");
             CompletableFuture<Integer> result = RpcContext.getContext().getCompletableFuture();
             result.whenComplete((a, t) -> {
-                LOGGER.info("Init hash service : url {} result:{}", url, a, t);
+                if (t == null) {
+                    LOGGER.info("Init hash service successful. address:{} result:{}", url.getAddress(), a, t);
+                }else{
+                    LOGGER.error("Init hash service failed. address:{} ", url.getAddress(),  t);
+                }
             });
         }
     }
@@ -166,8 +173,12 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
                     reference.setInterface(CallbackService.class);
 
                     reference.toUrls().add(url);
-                    // TODO: remote call may fail
-                    reference.get().addListener("env.listener", extension);
+                    try {
+                        reference.get().addListener("env.listener", extension);
+                    } catch (Throwable t) {
+                        LOGGER.error("Init callback listener failed. url:{}", url, t);
+                    }
+                    LOGGER.info("Init callback listener successful. extension:{} address:{}", extension.getClass().getSimpleName(), url.getAddress());
                 }
             }
         }
