@@ -1,9 +1,10 @@
 package com.aliware.tianchi.policy;
 
+import com.aliware.tianchi.ThrashConfig;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import com.aliware.tianchi.ThrashConfig;
 
 /**
  * @author guohaoice@gmail.com
@@ -27,4 +28,10 @@ public class SmallConfig extends BaseConfig {
     public List<ThrashConfig> getConfigs() {
         return allConfig;
     }
+
+    @Override
+    protected String getQuota() {
+        return "small";
+    }
+
 }

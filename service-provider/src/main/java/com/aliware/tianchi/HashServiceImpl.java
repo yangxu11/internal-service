@@ -1,5 +1,9 @@
 package com.aliware.tianchi;
 
+import org.apache.dubbo.common.utils.NamedThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -8,9 +12,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.dubbo.common.utils.NamedThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Facade
@@ -64,7 +65,7 @@ public class HashServiceImpl implements HashInterface {
 
     private void refresh(ThrashConfig thrashConfig) {
         this.currentConfig = thrashConfig;
-        LOGGER.info("Refresh config to {}",thrashConfig);
+        LOGGER.info("Refresh config to {}", thrashConfig);
     }
 
     private long nextRTT() {
@@ -73,7 +74,7 @@ public class HashServiceImpl implements HashInterface {
         double cdf = 0;
         while (u >= cdf) {
             x++;
-            cdf = 1 - Math.exp(-1.0D * 1 / currentConfig.averageRTTInMs * x);
+            cdf = 1 - Math.exp(-1.0D * 1 / currentConfig.avg_rtt * x);
         }
         return x;
     }

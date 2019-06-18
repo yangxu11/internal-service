@@ -1,16 +1,7 @@
 package com.aliware.tianchi;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import com.aliware.tianchi.policy.BaseConfig;
-import com.aliware.tianchi.policy.LargeConfig;
-import com.aliware.tianchi.policy.MediumConfig;
-import com.aliware.tianchi.policy.SmallConfig;
 import org.apache.dubbo.common.extension.ExtensionLoader;
-import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ArgumentConfig;
 import org.apache.dubbo.config.MethodConfig;
@@ -20,6 +11,12 @@ import org.apache.dubbo.config.ServiceConfig;
 import org.apache.dubbo.rpc.service.CallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author guohaoice@gmail.com
@@ -33,26 +30,8 @@ public class MyProvider {
     private static ProtocolConfig protocol = new ProtocolConfig();
 
     public static void main(String[] args) throws InterruptedException {
-        String env = System.getProperty("quota");
-        if (StringUtils.isEmpty(env)) {
-            env = "small";
-            LOGGER.info("[PROVIDER-SERVICE] No specific args found, use [DEFAULT] to run demo provider");
-        }
-        BaseConfig config;
-        switch (env) {
-            case "small":
-                config = new SmallConfig();
-                break;
-            case "medium":
-                config = new MediumConfig();
-                break;
-            case "large":
-                config = new LargeConfig();
-                break;
-            default:
-                throw new IllegalStateException();
-        }
 
+        BaseConfig config = BaseConfig.loadConf();
         // 当前应用配置
         application.setName("service-provider");
         application.setQosEnable(false);
@@ -83,7 +62,7 @@ public class MyProvider {
         ServiceConfig<HashInterface> service =
                 new ServiceConfig<>();
         Map<String, String> attributes = new HashMap<>();
-        attributes.put("heartbeat","0" );
+        attributes.put("heartbeat", "0");
         service.setParameters(attributes);
         service.setApplication(application);
         service.setRegistry(registry);
@@ -104,7 +83,7 @@ public class MyProvider {
                             .getExtension(supportedExtensions.iterator().next());
             ServiceConfig<CallbackService> callbackServiceServiceConfig = new ServiceConfig<>();
             Map<String, String> attributes = new HashMap<>();
-            attributes.put("heartbeat","0" );
+            attributes.put("heartbeat", "0");
             callbackServiceServiceConfig.setParameters(attributes);
             callbackServiceServiceConfig.setApplication(application);
             callbackServiceServiceConfig.setRegistry(registry);

@@ -138,8 +138,8 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
             result.whenComplete((a, t) -> {
                 if (t == null) {
                     LOGGER.info("Init hash service successful. address:{} result:{}", url.getAddress(), a, t);
-                }else{
-                    LOGGER.error("Init hash service failed. address:{} ", url.getAddress(),  t);
+                } else {
+                    LOGGER.error("Init hash service failed. address:{} ", url.getAddress(), t);
                 }
             });
         }
