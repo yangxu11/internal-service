@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,6 +23,7 @@ public class HashServiceImpl implements HashInterface {
     private final String salt;
     private final AtomicBoolean init = new AtomicBoolean(false);
     private final List<ThrashConfig> configs;
+    private final InternalSemaphore permit;
     private volatile ThrashConfig currentConfig;
     private Random rng = new Random(2019);
     private ScheduledExecutorService scheduler =
@@ -32,6 +32,7 @@ public class HashServiceImpl implements HashInterface {
     HashServiceImpl(String salt, List<ThrashConfig> configs) {
         this.salt = salt;
         this.currentConfig = ThrashConfig.INIT_CONFIG;
+        this.permit = new InternalSemaphore(currentConfig.max_concurrent);
         this.configs = Collections.unmodifiableList(configs);
     }
 
@@ -41,13 +42,15 @@ public class HashServiceImpl implements HashInterface {
         if (!init.get()) {
             if (init.compareAndSet(false, true)) {
                 int startTime = 30;
+                int totalPermit = ThrashConfig.INIT_CONFIG.max_concurrent;
                 for (ThrashConfig thrashConfig : configs) {
-                    scheduler.schedule(() -> refresh(thrashConfig), startTime, TimeUnit.SECONDS);
+                    final int tmpTotal = totalPermit;
+                    scheduler.schedule(() -> refresh(thrashConfig, tmpTotal), startTime, TimeUnit.SECONDS);
                     startTime += thrashConfig.durationInSec;
+                    totalPermit = thrashConfig.max_concurrent;
                 }
             }
         }
-        Semaphore permit = currentConfig.permit;
         try {
             permit.acquire();
             long rtt = nextRTT();
@@ -63,8 +66,17 @@ public class HashServiceImpl implements HashInterface {
         throw new IllegalStateException("Unexpected exception");
     }
 
-    private void refresh(ThrashConfig thrashConfig) {
+    private void refresh(ThrashConfig thrashConfig, int totalPermit) {
         this.currentConfig = thrashConfig;
+        int permitChange = totalPermit - thrashConfig.max_concurrent;
+        if (permitChange != 0) {
+            if (permitChange > 0) {
+                permit.reducePermit(permitChange);
+            } else {
+                permit.addPermit(Math.abs(permitChange));
+            }
+        }
+
         LOGGER.info("Refresh config to {}", thrashConfig);
     }
 

@@ -1,24 +1,21 @@
 package com.aliware.tianchi;
 
-import java.util.concurrent.Semaphore;
-
 /**
  * @author guohaoice@gmail.com
  */
 public class ThrashConfig {
-    static final ThrashConfig INIT_CONFIG = new ThrashConfig(0, 1600, 50);
-    final long durationInSec;
+    static final ThrashConfig INIT_CONFIG = new ThrashConfig(1600, 50);
+    final long durationInSec = 6;
     final double avg_rtt;
-    final Semaphore permit;
+    final int max_concurrent;
 
-    public ThrashConfig(long durationInSec, int max_concurrency, double avg_rtt) {
-        this.durationInSec = durationInSec;
+    public ThrashConfig(int max_concurrent, double avg_rtt) {
         this.avg_rtt = avg_rtt;
-        this.permit = new Semaphore(max_concurrency);
+        this.max_concurrent = max_concurrent;
     }
 
     @Override
     public String toString() {
-        return "Duration :" + durationInSec + " averageRTT:" + avg_rtt + " maxConcurrency:" + permit.availablePermits();
+        return "Duration :" + durationInSec + " averageRTT:" + avg_rtt + " maxConcurrency:" + this.max_concurrent;
     }
 }

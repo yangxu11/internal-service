@@ -15,12 +15,7 @@ import java.util.List;
 /**
  * @author guohaoice@gmail.com
  */
-public abstract class BaseConfig {
-    final int onePeriodInSec = 15;
-    final int warmUpInSec = 35;
-    final int minRTTInMs = 45;
-    final int normalRTTInMs = 50;
-    final int maxRTTInMs = 55;
+public class BaseConfig {
     private final int maxThreadCount;
     private final int port;
     private List<ThrashConfig> thrashConfigs = new ArrayList<>(10);
@@ -42,15 +37,15 @@ public abstract class BaseConfig {
         BaseConfig config;
         switch (env) {
             case "small":
-                config = new SmallConfig();
+                config=new BaseConfig(200,20880);
                 config.thrashConfigs = globalConf.small;
                 break;
             case "medium":
-                config = new MediumConfig();
+                config=new BaseConfig(450,20870);
                 config.thrashConfigs = globalConf.medium;
                 break;
             case "large":
-                config = new LargeConfig();
+                config=new BaseConfig(650,20890);
                 config.thrashConfigs = globalConf.large;
                 break;
             default:
@@ -61,7 +56,7 @@ public abstract class BaseConfig {
 
     }
 
-    public static String loadResourceAsString(String fileName) {
+    private static String loadResourceAsString(String fileName) {
         ClassLoader classLoader = getClassLoader();
 
         Enumeration<URL> resources;
@@ -104,7 +99,5 @@ public abstract class BaseConfig {
     public List<ThrashConfig> getConfigs() {
         return thrashConfigs;
     }
-
-    protected abstract String getQuota();
 
 }
