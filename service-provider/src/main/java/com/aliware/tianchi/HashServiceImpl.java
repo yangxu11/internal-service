@@ -40,7 +40,7 @@ public class HashServiceImpl implements HashInterface {
         long st = System.currentTimeMillis();
         if (!init.get()) {
             if (init.compareAndSet(false, true)) {
-                int startTime = 0;
+                int startTime = 30;
                 for (ThrashConfig thrashConfig : configs) {
                     scheduler.schedule(() -> refresh(thrashConfig), startTime, TimeUnit.SECONDS);
                     startTime += thrashConfig.durationInSec;
