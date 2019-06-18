@@ -20,11 +20,9 @@ public class InternalSemaphore extends Semaphore {
 
     void reducePermit(int n) {
         super.reducePermits(n);
-        System.out.println("RELEASE PERMIT TO:"+super.availablePermits());
     }
 
     void addPermit(int n) {
         super.release(n);
-        System.out.println("ADD PERMIT to:"+super.availablePermits());
     }
 }
