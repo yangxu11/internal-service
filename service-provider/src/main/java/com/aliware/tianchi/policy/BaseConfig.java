@@ -2,12 +2,12 @@ package com.aliware.tianchi.policy;
 
 import com.aliware.tianchi.ThrashConfig;
 import com.google.gson.Gson;
+import org.apache.dubbo.common.utils.IOUtils;
 import org.apache.dubbo.common.utils.StringUtils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -37,15 +37,15 @@ public class BaseConfig {
         BaseConfig config;
         switch (env) {
             case "small":
-                config=new BaseConfig(200,20880);
+                config = new BaseConfig(200, 20880);
                 config.thrashConfigs = globalConf.small;
                 break;
             case "medium":
-                config=new BaseConfig(450,20870);
+                config = new BaseConfig(450, 20870);
                 config.thrashConfigs = globalConf.medium;
                 break;
             case "large":
-                config=new BaseConfig(650,20890);
+                config = new BaseConfig(650, 20890);
                 config.thrashConfigs = globalConf.large;
                 break;
             default:
@@ -68,11 +68,8 @@ public class BaseConfig {
 
         while (resources.hasMoreElements()) {
             URL url = resources.nextElement();
-            if (!Paths.get(url.getPath()).toFile().exists()) {
-                continue;
-            }
             try {
-                return String.join("", Files.readAllLines(Paths.get(url.getPath()))).replace("\n", "").trim();
+                return IOUtils.read(new InputStreamReader(url.openStream())).replace("\n", "").trim();
             } catch (IOException e) {
                 throw new IllegalStateException("Failed to load provider-conf.json,cause:" + e.getMessage(), e);
             }
