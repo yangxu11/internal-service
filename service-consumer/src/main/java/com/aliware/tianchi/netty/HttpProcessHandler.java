@@ -13,21 +13,16 @@ import io.netty.util.CharsetUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.dubbo.common.Constants;
 import org.apache.dubbo.common.URL;
-import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.rpc.RpcContext;
-import org.apache.dubbo.rpc.listener.CallbackListener;
-import org.apache.dubbo.rpc.service.CallbackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -36,10 +31,11 @@ import static io.netty.handler.codec.rtsp.RtspResponseStatuses.INTERNAL_SERVER_E
 
 @ChannelHandler.Sharable
 public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+    static final ApplicationConfig application = new ApplicationConfig();
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpProcessHandler.class);
-    private final ApplicationConfig application = new ApplicationConfig();
     private volatile boolean init = false;
     private HashInterface hashInterface;
+    private InitProviderService initService = new InitProviderService();
     private String salt = System.getProperty("salt");
 
     HttpProcessHandler() {
@@ -84,17 +80,9 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOGGER.error("Channel error", cause);
-        ctx.close();
+//        ctx.close();
     }
 
-    private List<URL> buildUrls(String interfaceName, Map<String, String> attributes) {
-        List<URL> urls = new ArrayList<>();
-        // 配置直连的 provider 列表
-        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, interfaceName, attributes));
-        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-medium", 20870, interfaceName, attributes));
-        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-large", 20890, interfaceName, attributes));
-        return urls;
-    }
 
     private HashInterface getServiceStub() {
         application.setName("service-gateway");
@@ -113,7 +101,7 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
         attributes.put("async", "true");
         attributes.put(Constants.HEARTBEAT_KEY, "0");
         attributes.put(Constants.RECONNECT_KEY, "false");
-        urls.addAll(buildUrls(HashInterface.class.getName(), attributes));
+        urls.addAll(initService.buildUrls(HashInterface.class.getName(), attributes));
         return reference.get();
     }
 
@@ -124,63 +112,9 @@ public class HttpProcessHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         init = true;
 
-        initThrash();
+        initService.doInit();
 
-        initCallbackListener();
     }
 
-    private void initThrash() {
-        List<URL> urls = buildUrls(HashInterface.class.getName(), new HashMap<>());
-        for (URL url : urls) {
-            RpcContext.getContext().setUrl(url);
-            hashInterface.hash("hey");
-            CompletableFuture<Integer> result = RpcContext.getContext().getCompletableFuture();
-            result.whenComplete((a, t) -> {
-                if (t == null) {
-                    LOGGER.info("Init hash service successful. address:{} result:{}", url.getAddress(), a, t);
-                } else {
-                    LOGGER.error("Init hash service failed. address:{} ", url.getAddress(), t);
-                }
-            });
-        }
-    }
 
-    private void initCallbackListener() {
-        Set<String> supportedExtensions =
-                ExtensionLoader.getExtensionLoader(CallbackListener.class).getSupportedExtensions();
-        if (!supportedExtensions.isEmpty()) {
-            Map<String, String> attributes = new HashMap<>();
-            attributes.put("addListener.1.callback", "true");
-            attributes.put("callbacks", "1000");
-            attributes.put("connections", "1");
-            attributes.put("dubbo", "2.0.2");
-            attributes.put("dynamic", "true");
-            attributes.put("generic", "false");
-            attributes.put("interface", "org.apache.dubbo.rpc.service.CallbackService");
-            attributes.put("methods", "addListener");
-            attributes.put(Constants.HEARTBEAT_KEY, "0");
-            attributes.put(Constants.RECONNECT_KEY, "false");
-
-            for (String supportedExtension : supportedExtensions) {
-                List<URL> urls = buildUrls(CallbackService.class.getName(), attributes);
-                for (URL url : urls) {
-                    CallbackListener extension =
-                            ExtensionLoader.getExtensionLoader(CallbackListener.class)
-                                    .getExtension(supportedExtension);
-
-                    ReferenceConfig<CallbackService> reference = new ReferenceConfig<>();
-                    reference.setApplication(application);
-                    reference.setInterface(CallbackService.class);
-
-                    reference.toUrls().add(url);
-                    try {
-                        reference.get().addListener("env.listener", extension);
-                    } catch (Throwable t) {
-                        LOGGER.error("Init callback listener failed. url:{}", url, t);
-                    }
-                    LOGGER.info("Init callback listener successful. extension:{} address:{}", extension.getClass().getSimpleName(), url.getAddress());
-                }
-            }
-        }
-    }
 }
