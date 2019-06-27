@@ -45,18 +45,14 @@ public class InitProviderService {
 
     private HashInterface[] getInitStubs() {
         HashInterface[] stubs = new HashInterface[3];
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("async", "true");
-        attributes.put(Constants.HEARTBEAT_KEY, "0");
-        attributes.put(Constants.RECONNECT_KEY, "false");
         ReferenceConfig<HashInterface> conf = createNewRefConf();
-        conf.toUrls().add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, HashInterface.class.getName(), attributes));
+        conf.setUrl("dubbo://provider-small:20880");
         stubs[0] = conf.get();
         conf = createNewRefConf();
-        conf.toUrls().add(new URL(Constants.DUBBO_PROTOCOL, "provider-medium", 20870, HashInterface.class.getName(), attributes));
+        conf.setUrl("dubbo://provider-medium:20870");
         stubs[1] = conf.get();
         conf = createNewRefConf();
-        conf.toUrls().add(new URL(Constants.DUBBO_PROTOCOL, "provider-large", 20890, HashInterface.class.getName(), attributes));
+        conf.setUrl("dubbo://provider-large:20890");
         stubs[2] = conf.get();
         return stubs;
     }
@@ -64,6 +60,10 @@ public class InitProviderService {
 
     private ReferenceConfig<HashInterface> createNewRefConf() {
         ApplicationConfig application = new ApplicationConfig();
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("async", "true");
+        attributes.put(Constants.HEARTBEAT_KEY, "0");
+        attributes.put(Constants.RECONNECT_KEY, "false");
         application.setName("service-gateway");
         RegistryConfig registry = new RegistryConfig();
         registry.setAddress("N/A");
@@ -71,6 +71,7 @@ public class InitProviderService {
         reference.setRegistry(registry);
         reference.setApplication(application);
         reference.setInterface(HashInterface.class);
+        reference.setParameters(attributes);
         return reference;
     }
 
@@ -103,7 +104,7 @@ public class InitProviderService {
 
                     reference.toUrls().add(url);
                     try {
-                        reference.get().addListener("env.listener", extension);
+                        reference.get().addListener(supportedExtension, extension);
                     } catch (Throwable t) {
                         LOGGER.error("Init callback listener failed. url:{}", url, t);
                     }
