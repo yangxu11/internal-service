@@ -2,127 +2,127 @@
   "small": [
     {
       "max_concurrent": 109,
-      "avg_rtt": 46.12780363944139
+      "avg_rtt": 44.36304436304437
     },
     {
-      "max_concurrent": 196,
-      "avg_rtt": 32.56895978730475
+      "max_concurrent": 148,
+      "avg_rtt": 56.27376425855513
     },
     {
-      "max_concurrent": 161,
-      "avg_rtt": 24.438372799028535
+      "max_concurrent": 108,
+      "avg_rtt": 36.46185010128292
     },
     {
-      "max_concurrent": 112,
-      "avg_rtt": 64.14662084765177
+      "max_concurrent": 147,
+      "avg_rtt": 58.61244019138756
     },
     {
-      "max_concurrent": 168,
-      "avg_rtt": 39.725703475999055
+      "max_concurrent": 121,
+      "avg_rtt": 36.99174564353409
     },
     {
-      "max_concurrent": 158,
-      "avg_rtt": 49.92101105845182
+      "max_concurrent": 136,
+      "avg_rtt": 42.915746292205746
     },
     {
-      "max_concurrent": 145,
-      "avg_rtt": 38.863575448941305
+      "max_concurrent": 101,
+      "avg_rtt": 26.199740596627755
     },
     {
-      "max_concurrent": 113,
-      "avg_rtt": 18.54587231248974
+      "max_concurrent": 110,
+      "avg_rtt": 36.937541974479515
     },
     {
-      "max_concurrent": 144,
-      "avg_rtt": 47.07420725727362
+      "max_concurrent": 116,
+      "avg_rtt": 32.29398663697105
     },
     {
-      "max_concurrent": 118,
-      "avg_rtt": 58.38693715982187
+      "max_concurrent": 135,
+      "avg_rtt": 64.74820143884892
     }
   ],
   "medium": [
     {
       "max_concurrent": 411,
-      "avg_rtt": 56.666207086722736
+      "avg_rtt": 62.07521522428636
     },
     {
-      "max_concurrent": 413,
-      "avg_rtt": 45.46455306032585
+      "max_concurrent": 392,
+      "avg_rtt": 47.138047138047135
     },
     {
-      "max_concurrent": 357,
-      "avg_rtt": 29.50413223140496
+      "max_concurrent": 331,
+      "avg_rtt": 39.278509552628456
     },
     {
-      "max_concurrent": 390,
-      "avg_rtt": 89.73768982972848
+      "max_concurrent": 365,
+      "avg_rtt": 46.74093994109361
     },
     {
-      "max_concurrent": 353,
-      "avg_rtt": 52.55322316510347
+      "max_concurrent": 423,
+      "avg_rtt": 50.315213512549064
     },
     {
-      "max_concurrent": 449,
-      "avg_rtt": 72.9251258729901
+      "max_concurrent": 370,
+      "avg_rtt": 43.85445063411165
     },
     {
-      "max_concurrent": 433,
-      "avg_rtt": 71.29919315000824
+      "max_concurrent": 418,
+      "avg_rtt": 34.20342034203421
     },
     {
-      "max_concurrent": 384,
-      "avg_rtt": 38.95708633458456
+      "max_concurrent": 379,
+      "avg_rtt": 48.00506649778341
     },
     {
-      "max_concurrent": 316,
-      "avg_rtt": 49.328754292850455
+      "max_concurrent": 345,
+      "avg_rtt": 36.012526096033405
     },
     {
-      "max_concurrent": 389,
-      "avg_rtt": 57.88690476190476
+      "max_concurrent": 355,
+      "avg_rtt": 66.15728661945583
     }
   ],
   "large": [
     {
       "max_concurrent": 504,
-      "avg_rtt": 53.70843989769821
+      "avg_rtt": 56.48957632817754
     },
     {
-      "max_concurrent": 485,
-      "avg_rtt": 44.50357863828226
+      "max_concurrent": 484,
+      "avg_rtt": 48.14004376367615
     },
     {
-      "max_concurrent": 408,
-      "avg_rtt": 36.067892503536065
+      "max_concurrent": 585,
+      "avg_rtt": 55.1314673452078
     },
     {
-      "max_concurrent": 425,
-      "avg_rtt": 47.70992366412214
+      "max_concurrent": 512,
+      "avg_rtt": 58.96579523206265
     },
     {
-      "max_concurrent": 427,
-      "avg_rtt": 32.71028037383178
+      "max_concurrent": 480,
+      "avg_rtt": 36.03062603212731
     },
     {
-      "max_concurrent": 472,
-      "avg_rtt": 44.20303427608167
+      "max_concurrent": 518,
+      "avg_rtt": 35.98721689592886
     },
     {
-      "max_concurrent": 599,
-      "avg_rtt": 45.392543194907546
+      "max_concurrent": 505,
+      "avg_rtt": 36.26831370295892
     },
     {
-      "max_concurrent": 455,
-      "avg_rtt": 37.75933609958506
+      "max_concurrent": 535,
+      "avg_rtt": 40.755694370381654
     },
     {
-      "max_concurrent": 571,
-      "avg_rtt": 45.55245313123255
+      "max_concurrent": 563,
+      "avg_rtt": 37.96870785001349
     },
     {
-      "max_concurrent": 458,
-      "avg_rtt": 63.09409009505441
+      "max_concurrent": 534,
+      "avg_rtt": 70.73784607232746
     }
   ]
 }
