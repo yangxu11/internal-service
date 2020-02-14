@@ -46,13 +46,16 @@ public class InitProviderService {
     private HashInterface[] getInitStubs() {
         HashInterface[] stubs = new HashInterface[3];
         ReferenceConfig<HashInterface> conf = createNewRefConf();
-        conf.setUrl("dubbo://provider-small:20880");
+        //conf.setUrl("dubbo://provider-small:20880");
+        conf.setUrl("dubbo://127.0.0.1:20880");
         stubs[0] = conf.get();
         conf = createNewRefConf();
-        conf.setUrl("dubbo://provider-medium:20870");
+        //conf.setUrl("dubbo://provider-medium:20870");
+        conf.setUrl("dubbo://127.0.0.1:20870");
         stubs[1] = conf.get();
         conf = createNewRefConf();
-        conf.setUrl("dubbo://provider-large:20890");
+        //conf.setUrl("dubbo://provider-large:20890");
+        conf.setUrl("dubbo://127.0.0.1:20890");
         stubs[2] = conf.get();
         return stubs;
     }
