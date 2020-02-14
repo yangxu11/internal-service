@@ -43,7 +43,7 @@ public class MyProvider {
         protocol.setName("dubbo");
         protocol.setPort(config.getPort());
         protocol.setThreads(config.getMaxThreadCount());
-        protocol.setHost("0.0.0.0");
+        protocol.setHost("127.0.0.1");
 
         // 注意：ServiceConfig为重对象，内部封装了与注册中心的连接，以及开启服务端口
         exportHashService(config.getConfigs());
