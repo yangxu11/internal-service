@@ -116,10 +116,11 @@ public class InitProviderService {
 
     List<URL> buildUrls(String interfaceName, Map<String, String> attributes) {
         List<URL> urls = new ArrayList<>();
+        String host = "127.0.0.1";
         // 配置直连的 provider 列表
-        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-small", 20880, interfaceName, attributes));
-        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-medium", 20870, interfaceName, attributes));
-        urls.add(new URL(Constants.DUBBO_PROTOCOL, "provider-large", 20890, interfaceName, attributes));
+        urls.add(new URL(Constants.DUBBO_PROTOCOL, "127.0.0.1", 20880, interfaceName, attributes));
+        urls.add(new URL(Constants.DUBBO_PROTOCOL, "127.0.0.1", 20870, interfaceName, attributes));
+        urls.add(new URL(Constants.DUBBO_PROTOCOL, "127.0.0.1", 20890, interfaceName, attributes));
         return urls;
     }
 }
